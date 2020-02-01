@@ -1,7 +1,7 @@
 import m from 'mithril'
 import './style.css'
 import { ConstraintsManager, encode, Constraints } from './constraints'
-import { copyTextToClipboard } from './utils'
+import { blurButton } from './utils'
 
 const manager = new ConstraintsManager()
 
@@ -9,9 +9,7 @@ const LabeledCheckbox: m.Component<{constraint: keyof Omit<Constraints, 'limits'
   view: vnode => m('button', {
     class: `${manager.constraints[vnode.attrs.constraint] ? 'on' : 'off'}`,
     onclick: (ev: Event) => {
-      if (ev.target != null) {
-        (ev.target as HTMLButtonElement).blur()
-      }
+      blurButton(ev)
       manager.toggle(vnode.attrs.constraint)
     }
   },
@@ -24,18 +22,14 @@ const LimitGrid: m.Component<{ constraint: keyof Omit<Constraints, 'limits'>, li
     m('button.title', {
       class: `${manager.constraints[vnode.attrs.constraint] ? 'on' : 'off'}`,
       onclick: (ev: Event) => {
-        if (ev.target != null) {
-          (ev.target as HTMLButtonElement).blur()
-        }
+        blurButton(ev)
         manager.toggle(vnode.attrs.constraint)
       }
     }, vnode.attrs.name),
     vnode.attrs.limits.map(limit => m('button', {
       class: `${manager.constraints[vnode.attrs.constraint] && manager.constraints.limits[vnode.attrs.limitName] === limit ? 'on' : 'off'}`,
       onclick: (ev: Event) => {
-        if (ev.target != null) {
-          (ev.target as HTMLButtonElement).blur()
-        }
+        blurButton(ev)
         if (!manager.constraints[vnode.attrs.constraint] || manager.constraints.limits[vnode.attrs.limitName] === limit) {
           manager.toggle(vnode.attrs.constraint)
         }
@@ -54,19 +48,7 @@ const Hashtag: m.Component = {
     }
 
     return m('.code',
-      m('h3', {
-        onclick: (ev: Event) => {
-          const node = ev.target as HTMLHeadingElement
-          const range = document.createRange()
-          range.selectNodeContents(node)
-          const selection = window.getSelection()
-          if (selection != null && selection.rangeCount > 0) {
-            selection.removeAllRanges()
-          }
-          selection?.addRange(range)
-        }
-      }, `#${hashtagValue}`),
-      m('button', { onclick: () => { copyTextToClipboard(`#${hashtagValue}`) } }, 'Copy'),
+      m('h3', `#${hashtagValue}`),
       m('a', { href: `https://twitter.com/search?q=%23${hashtagValue}`, target: '_blank' }, 'Twitter'),
       m('a', { href: `https://www.instagram.com/explore/tags/${hashtagValue}/`, target: '_blank' }, 'Instagram'))
   }
@@ -80,9 +62,7 @@ const ConstraintsCard: m.Component<{id: string}> = {
     return m('article',
       m('button.call', {
         onclick: (ev: Event) => {
-          if (ev.target != null) {
-            (ev.target as HTMLButtonElement).blur()
-          }
+          blurButton(ev)
           manager.random()
         }
       }, 'Too many choices!'),
