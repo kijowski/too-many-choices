@@ -1,0 +1,206 @@
+:root {
+  --primary: #854836;
+  --secondary: #f5b553;
+  --light: #f7f7f7;
+  --dark: #000000;
+  --my-serif: 'Libre Baskerville', serif;
+  --my-sans-serif: 'Darker Grotesque', sans-serif;
+  --base: 1.4em;
+  --m1: calc(var(--base) * 1.618);
+  --m2: calc(var(--base) * 1.618 * 1.618);
+  --ms1: calc(var(--base) / 1.618);
+  --ms2: calc(var(--base) / 1.618 / 1.618);
+}
+
+body {
+  color: var(--dark);
+  background: var(--light);
+  font-family: var(--my-sans-serif);
+  font-size: var(--base);
+  overflow-wrap: break-word;
+  text-rendering: optimizeLegibility;
+  margin: 0px;
+  padding: 0px;
+}
+
+a {
+  color: var(--black);
+
+  &:hover {
+    color: var(--secondary);
+  }
+}
+
+main {
+  height: calc(100vh - 20px);
+  min-height: calc(100vh - 20px);
+  width: calc(100vw - 30px);
+  margin: 10px;
+  display: grid;
+  grid-template-columns: 1.618fr 800px 1fr;
+  grid-template-rows: 1fr 1fr 20px 1fr;
+  grid-template-areas: ". . ." ". content ." ". footer ." ". . .";
+  align-content: space-around;
+  justify-content: space-between;
+
+  & footer {
+    grid-area: footer;
+    color: var(--primary);
+    background: #ffffff;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    & a {
+      font-size: var(--ms2);
+      color: #49494950;
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover {
+        color: var(--secondary);
+      }
+    }
+
+    & img {
+      height: 80%;
+    }
+  }
+
+  & article {
+    grid-area: content;
+    background: white;
+    padding: 1em 2em;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+
+    & .call {
+      font-size: var(--base);
+      font-weight: 300 !important;
+      color: var(--secondary) !important;
+      text-transform: uppercase;
+      outline: none;
+    }
+
+    & .code {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      color: var(--secondary);
+      grid-column-start: 2;
+      grid-column-end: 5;
+      justify-items: center;
+      align-items: center;
+
+      & a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+
+        &:hover {
+          color: var(--secondary);
+        }
+      }
+
+      & h3 {
+        margin: 0;
+        grid-column-start: 1;
+        grid-column-end: 4;
+      }
+
+      & button {
+        grid-column-start: initial;
+        grid-column-end: initial;
+      }
+    }
+  }
+}
+
+button {
+  color: #494949 !important;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: #ffffff;
+  font-family: var(--my-sans-serif);
+  font-size: var(--ms1);
+
+  /* margin: 5px; */
+  padding: 10px;
+  /* border: 1px solid #494949 !important; */
+  border: 0px;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.4s ease 0s;
+
+  &:hover {
+    /* border: 1px solid #494949 !important; */
+    /* border-color: var(--secondary) !important; */
+    background: var(--light);
+    transition: all 0.4s ease 0s;
+  }
+
+  &.on {
+    color: #ffffff !important;
+    background: var(--secondary);
+    transition: all 0.4s ease 0s;
+  }
+}
+
+.number {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  justify-items: stretch;
+
+  &.value {
+    border-left-width: 0px !important;
+    border-right-width: 0px !important;
+  }
+}
+
+.limitgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 30px repeat(2, 1fr);
+  justify-items: stretch;
+
+  & .title {
+    /* font-size: var(--ms1);
+    text-transform: uppercase;
+    text-align: center; */
+    padding: 0px;
+    grid-column-start: 1;
+    grid-column-end: 4;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  main {
+    grid-template-columns: auto;
+    grid-template-rows: 1fr 50px;
+    grid-template-areas: "content" "footer";
+    margin: 0px;
+    grid-gap: 0px;
+
+    & article {
+      width: calc(100vw - 2em);
+      margin: 0px;
+      padding: 1em;
+    }
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  main {
+    grid-template-columns: 1.618fr 550px 1fr;
+  }
+}
+
+::selection {
+  background: var(--primary);
+}
+
+::-moz-selection {
+  background: var(--primary);
+}
