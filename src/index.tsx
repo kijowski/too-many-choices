@@ -1,13 +1,13 @@
 import m from 'mithril'
 import './style.css'
 import { ConstraintsManager, encode, Constraints } from './constraints'
-import { blurButton } from './utils'
+import { blurButton, selectHeadingTest } from './utils'
 
 const manager = new ConstraintsManager()
 
 const LabeledCheckbox: m.Component<{constraint: keyof Omit<Constraints, 'limits'>, name: string}> = ({
   view: vnode => m('button', {
-    class: `${manager.constraints[vnode.attrs.constraint] ? 'on' : 'off'}`,
+    class: `${manager.constraints[vnode.attrs.constraint] ? 'on' : ''}`,
     onclick: (ev: Event) => {
       blurButton(ev)
       manager.toggle(vnode.attrs.constraint)
@@ -20,7 +20,7 @@ const LabeledCheckbox: m.Component<{constraint: keyof Omit<Constraints, 'limits'
 const LimitGrid: m.Component<{ constraint: keyof Omit<Constraints, 'limits'>, limitName: keyof Constraints['limits'], limits: number[], name: string}> = ({
   view: vnode => m('.limitgrid',
     m('button.title', {
-      class: `${manager.constraints[vnode.attrs.constraint] ? 'on' : 'off'}`,
+      class: `${manager.constraints[vnode.attrs.constraint] ? 'on' : ''}`,
       onclick: (ev: Event) => {
         blurButton(ev)
         manager.toggle(vnode.attrs.constraint)
@@ -43,15 +43,10 @@ const Hashtag: m.Component = {
   view: () => {
     const hashtagValue = encode(manager.constraints)
 
-    if (hashtagValue === '') {
-      return m('.explanation', 'Select some constraints or click TOO MANY CHOICES!')
-    }
-
-    return m('.code',
-      m('h3', `#${hashtagValue}`),
-      m('a', { href: `https://twitter.com/search?q=%23${hashtagValue}`, target: '_blank' }, 'Twitter'),
-      m('a', { href: `https://www.reddit.com/r/generative/search/?q=%23${hashtagValue}&restrict_sr=1`, target: '_blank' }, 'Reddit'),
-      m('a', { href: `https://www.instagram.com/explore/tags/${hashtagValue}/`, target: '_blank' }, 'Instagram'))
+    return m('.hashtag',
+      hashtagValue === '' ? 'Select some constraints or click TOO MANY CHOICES!' : [
+        m('h3', { onclick: selectHeadingTest }, `#${hashtagValue}`),
+        m('span', 'Happy creating!!!')])
   }
 }
 
