@@ -91,6 +91,7 @@ main {
       align-content: center;
       justify-content: space-around;
       flex-direction: column;
+      text-align: center;
     }
 
     & .code {
