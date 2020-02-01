@@ -1,0 +1,34 @@
+{
+  "name": "@kijowski/toomanychoices",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html"
+  },
+  "keywords": [],
+  "author": "Michał Kijowski <michal@kijowski.dev> (https://kijowski.dev)",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/mithril": "2.0.2",
+    "@typescript-eslint/eslint-plugin": "2.18.0",
+    "@typescript-eslint/parser": "2.18.0",
+    "autoprefixer": "9.7.4",
+    "eslint": "6.8.0",
+    "eslint-config-standard-with-typescript": "12.0.1",
+    "eslint-plugin-import": "2.20.0",
+    "eslint-plugin-node": "9.2.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-standard": "4.0.1",
+    "parcel": "1.12.4",
+    "postcss-calc": "7.0.1",
+    "postcss-import": "12.0.1",
+    "postcss-normalize": "8.0.1",
+    "postcss-preset-env": "6.7.0",
+    "typescript": "3.7.5"
+  },
+  "dependencies": {
+    "mithril": "2.0.4"
+  }
+}
