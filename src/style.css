@@ -197,7 +197,7 @@ button {
 
     & article {
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: repeat(10,1fr);
+      grid-template-rows: repeat(10, 1fr);
       width: calc(100vw - 2em);
       margin: 0px;
       padding: 1em;
@@ -217,14 +217,6 @@ button {
 
 @media only screen and (max-width: 800px) {
   main {
-    grid-template-columns: 1.618fr 550px 1fr;
+    grid-template-columns: 1.618fr 650px 1fr;
   }
-}
-
-::selection {
-  background: var(--primary);
-}
-
-::-moz-selection {
-  background: var(--primary);
 }
