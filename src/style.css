@@ -188,6 +188,7 @@ button {
 
 @media only screen and (max-width: 600px) {
   main {
+    height: unset;
     grid-template-columns: auto;
     grid-template-rows: 1fr 50px;
     grid-template-areas: "content" "footer";
@@ -195,9 +196,21 @@ button {
     grid-gap: 0px;
 
     & article {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(10,1fr);
       width: calc(100vw - 2em);
       margin: 0px;
       padding: 1em;
+
+      & .explanation {
+        grid-column-start: 1;
+        grid-column-end: 3;
+      }
+
+      & .code {
+        grid-column-start: 1;
+        grid-column-end: 3;
+      }
     }
   }
 }
