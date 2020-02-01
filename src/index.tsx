@@ -3,105 +3,115 @@ import './style.css'
 import { ConstraintsManager, encode, Constraints } from './constraints'
 import { copyTextToClipboard } from './utils'
 
-// Below is not working - we were capturing children only from initial render!
-// const Card: m.ClosureComponent<{
-//   title: string;
-// }> = vnode => ({
-//   view: () =>
-//     m(
-//       "div.card",
-//       m("h3", vnode.attrs.title),
-//       vnode.children,
-//     )
-// });
-
 const manager = new ConstraintsManager()
 
-const LabeledCheckbox = <T extends keyof Omit<Constraints, 'limits'>>(x: T, name: string): m.Component => ({
-  view: () => m('button', {
-    class: `${manager.constraints[x] ? 'on' : 'off'}`,
-    onclick: () => manager.toggle(x)
+const LabeledCheckbox: m.Component<{constraint: keyof Omit<Constraints, 'limits'>, name: string}> = ({
+  view: vnode => m('button', {
+    class: `${manager.constraints[vnode.attrs.constraint] ? 'on' : 'off'}`,
+    onclick: (ev: Event) => {
+      if (ev.target != null) {
+        (ev.target as HTMLButtonElement).blur()
+      }
+      manager.toggle(vnode.attrs.constraint)
+    }
   },
-  name
+  vnode.attrs.name
   )
 })
 
-const LimitGrid = <T extends keyof Omit<Constraints, 'limits'>, S extends keyof Constraints['limits']>(x: T, y: S, name: string, limits: number[]): m.Component => ({
-  view: () => m('.limitgrid',
+const LimitGrid: m.Component<{ constraint: keyof Omit<Constraints, 'limits'>, limitName: keyof Constraints['limits'], limits: number[], name: string}> = ({
+  view: vnode => m('.limitgrid',
     m('button.title', {
-      class: `${manager.constraints[x] ? 'on' : 'off'}`,
-      onclick: () => {
-        manager.toggle(x)
-      }
-    }, name),
-    limits.map(limit => m('button', {
-      class: `${manager.constraints[x] && manager.constraints.limits[y] === limit ? 'on' : 'off'}`,
-      onclick: () => {
-        if (!manager.constraints[x] || manager.constraints.limits[y] === limit) {
-          manager.toggle(x)
+      class: `${manager.constraints[vnode.attrs.constraint] ? 'on' : 'off'}`,
+      onclick: (ev: Event) => {
+        if (ev.target != null) {
+          (ev.target as HTMLButtonElement).blur()
         }
-        manager.updateLimit(y, limit)
+        manager.toggle(vnode.attrs.constraint)
+      }
+    }, vnode.attrs.name),
+    vnode.attrs.limits.map(limit => m('button', {
+      class: `${manager.constraints[vnode.attrs.constraint] && manager.constraints.limits[vnode.attrs.limitName] === limit ? 'on' : 'off'}`,
+      onclick: (ev: Event) => {
+        if (ev.target != null) {
+          (ev.target as HTMLButtonElement).blur()
+        }
+        if (!manager.constraints[vnode.attrs.constraint] || manager.constraints.limits[vnode.attrs.limitName] === limit) {
+          manager.toggle(vnode.attrs.constraint)
+        }
+        manager.updateLimit(vnode.attrs.limitName, limit)
       }
     }, limit))
   )
 })
 
 const Hashtag: m.Component = {
-  view: () =>
-    m('.code',
+  view: () => {
+    const hashtagValue = encode(manager.constraints)
+
+    if (hashtagValue === '') {
+      return m('.explanation', 'Select some constraints!')
+    }
+
+    return m('.code',
       m('h3', {
         onclick: (ev: Event) => {
-          console.log(ev)
           const node = ev.target as HTMLHeadingElement
           const range = document.createRange()
           range.selectNodeContents(node)
-          console.log(node)
-          console.log(range)
           const selection = window.getSelection()
-          console.log(selection)
           if (selection != null && selection.rangeCount > 0) {
             selection.removeAllRanges()
           }
           selection?.addRange(range)
         }
-      }, `#${encode(manager.constraints)}`),
-      m('button', { onclick: () => { copyTextToClipboard(`#${encode(manager.constraints)}`) } }, 'Copy'),
-      m('a', { href: `https://twitter.com/search?q=%23${encode(manager.constraints)}`, target: '_blank' }, 'Twitter'),
-      m('a', { href: `https://www.instagram.com/explore/tags/${encode(manager.constraints)}/`, target: '_blank' }, 'Instagram'))
+      }, `#${hashtagValue}`),
+      m('button', { onclick: () => { copyTextToClipboard(`#${hashtagValue}`) } }, 'Copy'),
+      m('a', { href: `https://twitter.com/search?q=%23${hashtagValue}`, target: '_blank' }, 'Twitter'),
+      m('a', { href: `https://www.instagram.com/explore/tags/${hashtagValue}/`, target: '_blank' }, 'Instagram'))
+  }
 }
 
-const ConstraintsCard: m.Component = {
+const ConstraintsCard: m.Component<{id: string}> = {
   onupdate: function () {
-    console.log(`#${encode(manager.constraints)}`)
-    history.replaceState(null, '', `#${encode(manager.constraints)}`)
+    history.replaceState(null, '', `/#${encode(manager.constraints)}`)
   },
-  view: function () {
+  view: function (vnode) {
     return m('article',
-      // m('h1', 'Too many choices!'),
-      m('button.call', { onclick: () => { manager.random() } }, 'Too many choices!'),
-      m(LabeledCheckbox('noHueVariation', 'No hue variation')),
-      m(LabeledCheckbox('noSaturationVariation', 'No saturation variation')),
-      m(LabeledCheckbox('noValueVariation', 'No color value variation')),
-      m(LimitGrid('limitColors', 'colors', 'Max colors', [1, 2, 3, 4, 5, 6])),
-      m(LabeledCheckbox('noCircles', 'No circles')),
-      m(LabeledCheckbox('noRectangles', 'No rectangles')),
-      m(LabeledCheckbox('noLines', 'No lines')),
-      m(LabeledCheckbox('noTriangles', 'No triangles')),
-      m(LabeledCheckbox('noCurves', 'No curves')),
-      m(LabeledCheckbox('noOtherShapes', 'No other shapes')),
-      m(LimitGrid('limitShapes', 'shapes', 'Max shapes', [1, 2, 5, 10, 50, 100])),
-      m(LabeledCheckbox('noColorRandomness', 'No randomness in color')),
-      m(LabeledCheckbox('noPositionRandomness', 'No randomness in positioning')),
-      m(LabeledCheckbox('noSizeRandomness', 'No randomness in sizes')),
-      m(LabeledCheckbox('noCountRandomness', 'No randomness in count')),
-      m(LimitGrid('limitRandomValues', 'randomValues', 'Max random values', [1, 2, 5, 10, 50, 100])),
+      m('button.call', {
+        onclick: (ev: Event) => {
+          if (ev.target != null) {
+            (ev.target as HTMLButtonElement).blur()
+          }
+          manager.random()
+        }
+      }, 'Too many choices!'),
+      m(LabeledCheckbox, { constraint: 'noHueVariation', name: 'No hue variation' }),
+      m(LabeledCheckbox, { constraint: 'noSaturationVariation', name: 'No saturation variation' }),
+      m(LabeledCheckbox, { constraint: 'noValueVariation', name: 'No color value variation' }),
+      m(LabeledCheckbox, { constraint: 'noOpacityVariation', name: 'No color opacity variation' }),
+      m(LimitGrid, { constraint: 'limitColors', limitName: 'colors', name: 'Max colors', limits: [1, 2, 3, 4, 5, 6] }),
+      m(LabeledCheckbox, { constraint: 'noCircles', name: 'No circles' }),
+      m(LabeledCheckbox, { constraint: 'noRectangles', name: 'No rectangles' }),
+      m(LabeledCheckbox, { constraint: 'noLines', name: 'No lines' }),
+      m(LabeledCheckbox, { constraint: 'noTriangles', name: 'No triangles' }),
+      m(LabeledCheckbox, { constraint: 'noCurves', name: 'No curves' }),
+      m(LabeledCheckbox, { constraint: 'noOtherShapes', name: 'No other shapes' }),
+      m(LimitGrid, { constraint: 'limitShapes', limitName: 'shapes', name: 'Max shapes', limits: [1, 2, 5, 10, 50, 100] }),
+      m(LabeledCheckbox, { constraint: 'noColorRandomness', name: 'No randomness in color' }),
+      m(LabeledCheckbox, { constraint: 'noPositionRandomness', name: 'No randomness in positioning' }),
+      m(LabeledCheckbox, { constraint: 'noSizeRandomness', name: 'No randomness in sizes' }),
+      m(LabeledCheckbox, { constraint: 'noCountRandomness', name: 'No randomness in count' }),
+      m(LimitGrid, { constraint: 'limitRandomValues', limitName: 'randomValues', name: 'Max random values', limits: [1, 2, 5, 10, 50, 100] }),
       m(Hashtag)
-      // m('.code', { onclick: () => { copyTextToClipboard(`#${encode(manager.constraints)}`) } }, `#${encode(manager.constraints)}`)
     )
   }
 }
 
 const App = {
+  oninit: () => {
+    manager.parse(window.location.hash)
+  },
   view: () =>
     m('main', [
       m(ConstraintsCard),

@@ -25,6 +25,31 @@ export interface Constraints {
   }
 }
 
+const emptyConstraints = (): Constraints => ({
+  noHueVariation: false,
+  noOpacityVariation: false,
+  limitColors: false,
+  noSaturationVariation: false,
+  noValueVariation: false,
+  noCircles: false,
+  limitShapes: false,
+  noCurves: false,
+  noLines: false,
+  noOtherShapes: false,
+  noRectangles: false,
+  noTriangles: false,
+  limitRandomValues: false,
+  noCountRandomness: false,
+  noSizeRandomness: false,
+  noColorRandomness: false,
+  noPositionRandomness: false,
+  limits: {
+    colors: 1,
+    randomValues: 1,
+    shapes: 1
+  }
+})
+
 export const encode = (c: Constraints): string => {
   const colorC =
     (c.noHueVariation ? 'H' : '') +
@@ -46,67 +71,82 @@ export const encode = (c: Constraints): string => {
     (c.noSizeRandomness ? 'S' : '') +
     (c.noCountRandomness ? 'U' : '') +
     (c.limitRandomValues !== false ? c.limits.randomValues.toFixed() : '')
-  return (colorC === '' ? '' : `c${colorC}`) + (shapeC === '' ? '' : `s${shapeC}`) + (randomC === '' ? '' : `r${randomC}`)
+  return [colorC === '' ? '' : `c${colorC}`, shapeC === '' ? '' : `s${shapeC}`, randomC === '' ? '' : `r${randomC}`].filter(x => x !== '').join('-')
 }
-// const encodeGeneralConstraints = (c: GeneralConstraints): string => {
-//   let result = ''
-//   switch (c.canvas) {
-//     case 'rectangle':
-//       result += 'r'
-//       break
-//     case 'circle':
-//       result += 'c'
-//       break
-//     case 'square':
-//       result += 's'
-//       break
-//     case 'ultratall':
-//       result += 't'
-//       break
-//     case 'ultrawide':
-//       result += 'w'
-//   }
-//   switch (c.kind) {
-//     case 'static':
-//       result += 's'
-//       break
-//     case 'animation':
-//       result += 'a'
-//       break
-//     case 'loop':
-//       result += 'l'
-//       break
-//     case 'interactive':
-//       result += 'i'
-//   }
-//   return result
-// }
+
+const parse = (input: string): Constraints => {
+  const result = emptyConstraints()
+  input.replace('#', '').split('-').forEach(fragment => {
+    if (fragment.startsWith('c')) {
+      if (fragment.includes('H')) {
+        result.noHueVariation = true
+      }
+      if (fragment.includes('S')) {
+        result.noSaturationVariation = true
+      }
+      if (fragment.includes('V')) {
+        result.noValueVariation = true
+      }
+      if (fragment.includes('O')) {
+        result.noOpacityVariation = true
+      }
+      const countMatches = fragment.match(/\d+/)
+      if (countMatches != null && countMatches.length > 0) {
+        result.limitColors = true
+        result.limits.colors = parseInt(countMatches[0], 10)
+      }
+    }
+    if (fragment.startsWith('s')) {
+      if (fragment.includes('C')) {
+        result.noCircles = true
+      }
+      if (fragment.includes('R')) {
+        result.noRectangles = true
+      }
+      if (fragment.includes('L')) {
+        result.noLines = true
+      }
+      if (fragment.includes('U')) {
+        result.noCurves = true
+      }
+      if (fragment.includes('T')) {
+        result.noTriangles = true
+      }
+      if (fragment.includes('O')) {
+        result.noOtherShapes = true
+      }
+      const countMatches = fragment.match(/\d+/)
+      if (countMatches != null && countMatches.length > 0) {
+        result.limitShapes = true
+        result.limits.shapes = parseInt(countMatches[0], 10)
+      }
+    }
+    if (fragment.startsWith('r')) {
+      if (fragment.includes('C')) {
+        result.noColorRandomness = true
+      }
+      if (fragment.includes('P')) {
+        result.noPositionRandomness = true
+      }
+      if (fragment.includes('S')) {
+        result.noSizeRandomness = true
+      }
+      if (fragment.includes('U')) {
+        result.noCountRandomness = true
+      }
+      const countMatches = fragment.match(/\d+/)
+      if (countMatches != null && countMatches.length > 0) {
+        result.limitRandomValues = true
+        result.limits.randomValues = parseInt(countMatches[0], 10)
+      }
+    }
+  })
+
+  return result
+}
 
 export class ConstraintsManager {
-  constraints: Constraints = {
-    noHueVariation: false,
-    noOpacityVariation: false,
-    limitColors: false,
-    noSaturationVariation: false,
-    noValueVariation: false,
-    noCircles: false,
-    limitShapes: false,
-    noCurves: false,
-    noLines: false,
-    noOtherShapes: false,
-    noRectangles: false,
-    noTriangles: false,
-    limitRandomValues: false,
-    noCountRandomness: false,
-    noSizeRandomness: false,
-    noColorRandomness: false,
-    noPositionRandomness: false,
-    limits: {
-      colors: 1,
-      randomValues: 1,
-      shapes: 1
-    }
-  };
+  constraints = emptyConstraints()
 
   random (): void {
     const keys: Array<(keyof Omit<Constraints, 'limits'>)> =
@@ -130,60 +170,8 @@ export class ConstraintsManager {
   ): void {
     this.constraints[x] = !this.constraints[x]
   }
+
+  parse (hash: string): void {
+    this.constraints = parse(hash)
+  }
 }
-
-// general idea of encoding - the longer the hash the more constrained you are
-// or maybe inverse- the shorter the hash the more constrained you are (things in has are permitted)
-
-// COLOR
-// black and white
-// single color
-// limited palette
-// monochromatic (no hue change)
-// opacity on/off
-
-// White color is a freebie
-// H, S, V, O, x where x in 2, 4, 8, 16, 32, 64, 128, 256
-// cHSVO1 - no h, no stauration, no value, no opacity - basically this means one color and white
-// cH - no hue variation
-// cV5 - no value variation, only 5 colors
-
-// SHAPES
-// circles: no / unbounded / only
-// squares: no /  unbounded / only
-// lines: no / unbounded / only
-// triangles: no / unbounded / only
-// other: no /  unbounded / only
-// count: 1 / 3 / 10 / 100 / 500 / unbounded
-// encoding: _ - no circles, c - circles, C - only circles
-// example: cs10 - max 10 circles and squares, ct - unbounded circles and triangles
-
-// sCSL - no circles, squares and lines
-// sSLTO - only circles (no squares, lines, trianges and other)
-// sCLTO5 - only 5 squares
-
-// CANVAS or GENERAL
-// rectangular / square / ultrawide / ultratall / circular / diptych / triptych
-// type: static / loop / animation / interactive
-// encoindg: r/s/c/uw/ut/di/tr s/l/a/i
-
-// grs - rectangular static
-// guwa - ultrawide animation
-
-// RANDOMNESS
-// color: on / off
-// positioning: on / off
-// sizing: on / off
-// count: on/off
-// type of randomness: 2 values / 4 values / 10 values / unbounded
-// amount of randomness: single value / toggles only /
-//
-
-// rCPSS - no color, positioning and sizing randomness, need to be creative if want to use randomness
-// rP2 - no positioning only 2 values
-
-// THEME / KEYWORD ?
-
-// RANDOM IDEA for capture
-// one time use link/page for capture
-// time and/or count limited pages for capture

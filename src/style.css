@@ -2,7 +2,7 @@
   --primary: #854836;
   --secondary: #f5b553;
   --light: #f7f7f7;
-  --dark: #000000;
+  --dark: #494949;
   --my-serif: 'Libre Baskerville', serif;
   --my-sans-serif: 'Darker Grotesque', sans-serif;
   --base: 1.4em;
@@ -81,7 +81,16 @@ main {
       font-weight: 300 !important;
       color: var(--secondary) !important;
       text-transform: uppercase;
-      outline: none;
+    }
+
+    & .explanation {
+      grid-column-start: 3;
+      grid-column-end: 5;
+      display: flex;
+      align-items: center;
+      align-content: center;
+      justify-content: space-around;
+      flex-direction: column;
     }
 
     & .code {
@@ -89,15 +98,16 @@ main {
       grid-template-columns: 1fr 1fr 1fr;
       grid-template-rows: 1fr 1fr;
       color: var(--secondary);
-      grid-column-start: 2;
+      grid-column-start: 3;
       grid-column-end: 5;
       justify-items: center;
       align-items: center;
 
       & a {
-        color: var(--primary);
+        color: var(--dark);
         text-decoration: none;
-        font-weight: 600;
+        text-transform: uppercase;
+        /* font-weight: 600; */
 
         &:hover {
           color: var(--secondary);
