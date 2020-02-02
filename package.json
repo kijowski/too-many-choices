@@ -1,8 +1,8 @@
 {
   "name": "@kijowski/toomanychoices",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Sometimes there are just too many choices to make",
+  "main": "dist/index.html",
   "scripts": {
     "start": "parcel src/index.html",
     "build": "parcel build src/index.html"
