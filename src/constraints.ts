@@ -153,9 +153,24 @@ export class ConstraintsManager {
       Object.keys(this.constraints).filter(x => x !== 'limits') as Array<(keyof Omit<Constraints, 'limits'>)>
 
     for (const k of keys) {
-      this.constraints[k] = Math.random() < 0.2
+      const enable = Math.random() < 0.2
+      this.constraints[k] = enable
+      if (enable) {
+        switch (k) {
+          case 'limitColors':
+            this.constraints.limits.colors = [1, 2, 3, 4, 5, 6][Math.floor(Math.random() * 6)]
+            break
+          case 'limitRandomValues':
+            this.constraints.limits.randomValues = [1, 2, 5, 10, 50, 100][Math.floor(Math.random() * 6)]
+            break
+          case 'limitShapes':
+            this.constraints.limits.shapes = [1, 2, 5, 10, 50, 100][Math.floor(Math.random() * 6)]
+            break
+          default:
+            break
+        }
+      }
     }
-    this.constraints.limits.colors = [1, 2, 5, 10][Math.floor(Math.random() * 4)]
   }
 
   updateLimit<T extends keyof Constraints['limits']>(
