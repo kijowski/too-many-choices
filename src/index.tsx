@@ -6,37 +6,43 @@ import { blurButton, selectHeadingTest } from './utils'
 const manager = new ConstraintsManager()
 
 const LabeledCheckbox: m.Component<{constraint: keyof Omit<Constraints, 'limits'>, name: string}> = ({
-  view: vnode => m('button', {
-    class: `${manager.constraints[vnode.attrs.constraint] ? 'on' : ''}`,
-    onclick: (ev: Event) => {
-      blurButton(ev)
-      manager.toggle(vnode.attrs.constraint)
-    }
-  },
-  vnode.attrs.name
-  )
+  view: vnode => {
+    const { constraint, name } = vnode.attrs
+    return m('button',
+      {
+        class: `${manager.constraints[constraint] ? 'on' : ''}`,
+        onclick: (ev: Event) => {
+          blurButton(ev)
+          manager.toggle(constraint)
+        }
+      }, name)
+  }
 })
 
 const LimitGrid: m.Component<{ constraint: keyof Omit<Constraints, 'limits'>, limitName: keyof Constraints['limits'], limits: number[], name: string}> = ({
-  view: vnode => m('.limitgrid',
-    m('button.title', {
-      class: `${manager.constraints[vnode.attrs.constraint] ? 'on' : ''}`,
-      onclick: (ev: Event) => {
-        blurButton(ev)
-        manager.toggle(vnode.attrs.constraint)
-      }
-    }, vnode.attrs.name),
-    vnode.attrs.limits.map(limit => m('button', {
-      class: `${manager.constraints[vnode.attrs.constraint] && manager.constraints.limits[vnode.attrs.limitName] === limit ? 'on' : 'off'}`,
-      onclick: (ev: Event) => {
-        blurButton(ev)
-        if (!manager.constraints[vnode.attrs.constraint] || manager.constraints.limits[vnode.attrs.limitName] === limit) {
-          manager.toggle(vnode.attrs.constraint)
+  view: vnode => {
+    const { constraint, limitName, limits, name } = vnode.attrs
+    return m('.limitgrid',
+      m('button.title',
+        {
+          class: `${manager.constraints[constraint] ? 'on' : ''}`,
+          onclick: (ev: Event) => {
+            blurButton(ev)
+            manager.toggle(constraint)
+          }
+        }, name),
+      limits.map(limit => m('button', {
+        class: `${manager.constraints[constraint] && manager.constraints.limits[limitName] === limit ? 'on' : 'off'}`,
+        onclick: (ev: Event) => {
+          blurButton(ev)
+          if (!manager.constraints[constraint] || manager.constraints.limits[limitName] === limit) {
+            manager.toggle(constraint)
+          }
+          manager.updateLimit(limitName, limit)
         }
-        manager.updateLimit(vnode.attrs.limitName, limit)
-      }
-    }, limit))
-  )
+      }, limit))
+    )
+  }
 })
 
 const Hashtag: m.Component = {
@@ -51,11 +57,11 @@ const Hashtag: m.Component = {
 }
 
 const ConstraintsCard: m.Component<{id: string}> = {
-  onupdate: function () {
+  onupdate: () => {
     history.replaceState(null, '', `/#${encode(manager.constraints)}`)
   },
-  view: function (vnode) {
-    return m('article',
+  view: () =>
+    m('article',
       m('button.call', {
         onclick: (ev: Event) => {
           blurButton(ev)
@@ -81,7 +87,6 @@ const ConstraintsCard: m.Component<{id: string}> = {
       m(LimitGrid, { constraint: 'limitRandomValues', limitName: 'randomValues', name: 'Max random values', limits: [1, 2, 5, 10, 50, 100] }),
       m(Hashtag)
     )
-  }
 }
 
 const App = {
