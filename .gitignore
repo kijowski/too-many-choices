@@ -41,9 +41,6 @@ build/Release
 node_modules/
 jspm_packages/
 
-# TypeScript v1 declaration files
-typings/
-
 # TypeScript cache
 *.tsbuildinfo
 
@@ -105,3 +102,5 @@ public
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+.now
