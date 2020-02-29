@@ -73,14 +73,18 @@ const ConstraintsCard: m.Component<{id: string}> = {
       m('button.call', {
         onclick: async (ev: Event) => {
           blurButton(ev)
-          manager.random()
-          const word = await m.request<string>({
-            method: 'GET',
-            url: '/api/random-word'
-          })
-          manager.parse(word)
-          history.replaceState(null, '', `/${word}`)
-          // history.replaceState(null, '', `/#${encode(manager.constraints)}`)
+          try {
+            const word = await m.request<string>({
+              method: 'GET',
+              url: '/api/random-word'
+            })
+            manager.parse(word)
+            history.replaceState(null, '', `/${word}`)
+          } catch (err) {
+            console.error(err)
+            manager.random()
+            history.replaceState(null, '', `/#${encode(manager.constraints)}`)
+          }
         }
       }, 'Too many choices!'),
       m(LabeledCheckbox, { constraint: 'noHueVariation', name: 'Hue changes' }),
