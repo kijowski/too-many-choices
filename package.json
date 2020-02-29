@@ -11,6 +11,7 @@
   "author": "Michał Kijowski <michal@kijowski.dev> (https://kijowski.dev)",
   "license": "MIT",
   "devDependencies": {
+    "@now/node": "1.4.1",
     "@types/mithril": "2.0.2",
     "@typescript-eslint/eslint-plugin": "2.18.0",
     "@typescript-eslint/parser": "2.18.0",
