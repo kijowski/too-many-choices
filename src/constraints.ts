@@ -187,6 +187,51 @@ export class ConstraintsManager {
   }
 
   parse (hash: string): void {
-    this.constraints = parse(hash)
+    if (hash.startsWith('#')) {
+      this.constraints = parse(hash)
+    } else {
+      this.constraintsFromWord(hash)
+    }
+  }
+
+  constraintsFromWord (word: string): void {
+    // 32 bits of entropy needed
+    // 14 bits for no... constraints
+    // 6 bits per limit
+    const y = hashCode(word)
+    this.constraints.noCircles = (y & 1 << 0) !== 0
+    this.constraints.noColorRandomness = (y & 1 << 1) !== 0
+    this.constraints.noCountRandomness = (y & 1 << 2) !== 0
+    this.constraints.noCurves = (y & 1 << 3) !== 0
+    this.constraints.noHueVariation = (y & 1 << 4) !== 0
+    this.constraints.noLines = (y & 1 << 5) !== 0
+    this.constraints.noOpacityVariation = (y & 1 << 6) !== 0
+    this.constraints.noOtherShapes = (y & 1 << 7) !== 0
+    this.constraints.noPositionRandomness = (y & 1 << 8) !== 0
+    this.constraints.noRectangles = (y & 1 << 9) !== 0
+    this.constraints.noSaturationVariation = (y & 1 << 10) !== 0
+    this.constraints.noSizeRandomness = (y & 1 << 11) !== 0
+    this.constraints.noTriangles = (y & 1 << 12) !== 0
+    this.constraints.noValueVariation = (y & 1 << 13) !== 0
+    this.constraints.limitColors = (y & 1 << 14) !== 0
+    for (let i = 0; i < 6; i++) {
+      if ((y & 1 << 14 + i) !== 0) {
+        this.constraints.limits.colors = [1, 2, 3, 4, 5, 6][i]
+      }
+    }
+    this.constraints.limitRandomValues = (y & 1 << 20) !== 0
+    for (let i = 0; i < 6; i++) {
+      if ((y & 1 << 20 + i) !== 0) {
+        this.constraints.limits.randomValues = [1, 2, 5, 10, 50, 100][i]
+      }
+    }
+    this.constraints.limitShapes = (y & 1 << 26) !== 0
+    for (let i = 0; i < 6; i++) {
+      if ((y & 1 << 26 + i) !== 0) {
+        this.constraints.limits.shapes = [1, 2, 5, 10, 50, 100][i]
+      }
+    }
   }
 }
+
+const hashCode = (s: string): number => s.split('').reduce((a, b) => (((a << 5) - a) + b.charCodeAt(0)) | 0, 0)
