@@ -8,7 +8,8 @@
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["typings", "node_modules/@types"]
   },
-  "include": ["src"]
+  "include": ["src", "api", "typings"]
 }

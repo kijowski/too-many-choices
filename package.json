@@ -29,6 +29,7 @@
     "typescript": "3.7.5"
   },
   "dependencies": {
-    "mithril": "2.0.4"
+    "mithril": "2.0.4",
+    "wordlist-english": "1.2.1"
   }
 }
