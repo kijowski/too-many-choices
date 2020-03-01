@@ -1,6 +1,7 @@
 import m from 'mithril'
 import { ConstraintsManager, encode, Constraints } from './constraints'
 import { blurButton, selectHeadingTest } from './utils'
+import './style.css'
 
 const manager = new ConstraintsManager()
 

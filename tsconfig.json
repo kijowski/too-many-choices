@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["DOM", "ESNext"],
+    "lib": [
+      "DOM",
+      "ESNext",
+      // "WebWorker"
+    ],
     "module": "ESNext",
     "jsx": "react",
     "jsxFactory": "h",
@@ -9,7 +13,20 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "typeRoots": ["typings", "node_modules/@types"]
+    "typeRoots": [
+      "typings",
+      "node_modules/@types"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "./*"
+      ]
+    },
   },
-  "include": ["src", "api", "typings"]
+  "include": [
+    "src",
+    "api",
+    "typings"
+  ]
 }
