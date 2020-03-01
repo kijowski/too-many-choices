@@ -104,3 +104,6 @@ public
 .vscode-test
 
 .now
+
+localhost.crt
+localhost.key 

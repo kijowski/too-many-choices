@@ -1,6 +1,7 @@
 import m from 'mithril'
 import { ConstraintsManager, encode, Constraints } from './constraints'
 import { blurButton, selectHeadingTest } from './utils'
+import './style.css'
 
 const manager = new ConstraintsManager()
 
@@ -106,6 +107,14 @@ const ConstraintsCard: m.Component<{id: string}> = {
       m(LimitGrid, { constraint: 'limitRandomValues', limitName: 'randomValues', name: 'Max random vals', limits: [1, 2, 5, 10, 50, 100] }),
       m(Hashtag)
     )
+}
+
+if ('serviceWorker' in navigator) {
+  // Use the window load event to keep the page load performant
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .catch(() => { console.error('Failed to load service worker') })
+  })
 }
 
 const routes: m.RouteDefs = {}
