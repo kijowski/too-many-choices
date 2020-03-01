@@ -109,6 +109,14 @@ const ConstraintsCard: m.Component<{id: string}> = {
     )
 }
 
+if ('serviceWorker' in navigator) {
+  // Use the window load event to keep the page load performant
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .catch(() => { console.error('Failed to load service worker') })
+  })
+}
+
 const routes: m.RouteDefs = {}
 
 routes['/'] = {
